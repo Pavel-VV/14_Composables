@@ -8,7 +8,7 @@ export function useValidation(data, rules) {
     },{})
   )
 
-  function validateFild(fild){
+  async function validateFild(fild){
     const fildRules = rules[fild];
     if(!fildRules){
       errors.value[fild] = null;
@@ -16,7 +16,8 @@ export function useValidation(data, rules) {
     }
 
     for(const rule of fildRules) {
-      if(!rule.validator(data[fild])){
+      let isValidFild = await rule.validator(data[fild]);
+      if(!isValidFild){
         errors.value[fild] = rule.message;
         return false;
       }
@@ -48,8 +49,8 @@ export function useValidation(data, rules) {
   watchEffect(() => {
     validateAll()
 
-    console.log(errors.value)
-    console.log(isValid.value);
+    // console.log(errors.value)
+    // console.log(isValid.value);
   })
 
   return {
@@ -63,12 +64,24 @@ export function useValidation(data, rules) {
 
 export const validationRules = {
   email: (message = 'invalid email address') => ({
-    validator: (value) => /.+@.+\..+/.test(value),
+    validator: async (value) => {
+      await new Promise(r => setTimeout(r, 5000));
+     return /.+@.+\..+/.test(value)
+    },
     message,
   }),
 
+  // minLength: (min, message) => ({
+  //   validator: (value) => value.length >= min,
+  //   message: message || `Minimum length is ${min} characters`,
+  // }),
+
   minLength: (min, message) => ({
-    validator: (value) => value.length >= min,
+   async validator (value) {
+      await new Promise((r) => setTimeout(r, 5000))
+      // debugger;
+      return value.length >= min
+    },
     message: message || `Minimum length is ${min} characters`,
   }),
 
@@ -77,4 +90,3 @@ export const validationRules = {
     message,
   })
 }
-//
