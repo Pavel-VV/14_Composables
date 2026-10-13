@@ -1,4 +1,5 @@
 <script setup>
+import FildForm from './FildForm.vue'
 import { ref, watch, watchEffect } from "vue";
 // import { useValidationForm } from '../composables/useValidationForm';
 import { useDraftState } from '../composables/useDraftState';
@@ -49,8 +50,11 @@ console.log(isBlurred("email"))
 console.log(formState.value.password.blurred)
 async function submitForm() {
   markAllBlurred();
-  console.log(isValid.value)
-  if(!isValid.value) return
+  console.log(`${isValid.value} 111`)
+  if(!isValid.value){
+    loading.value = false;
+    return
+  }
   loading.value = true;
 
   try{
@@ -75,13 +79,20 @@ async function submitForm() {
       <div>
         Form
       </div>
-      <input class="input-form" v-model="form.email" v-on="handlers.email"/>
+      <div>
+        <FildForm
+          v-for="(fildTxt, fild, index) in formInput"
+          :key="index"
+          :label="fild"
+        />
+      </div>
+      <label>Email <input class="input-form" v-model="form.email" v-on="handlers.email"/></label>
       <span class="error-form" v-if="errors.email && formState.email.blurred">{{ errors.email }}</span>
 
-      <input class="input-form" v-model="form.password" v-on="handlers.password">
+      <label>Password <input class="input-form" v-model="form.password" v-on="handlers.password"/></label>
       <span class="error-form" v-if="errors.password && formState.password.blurred">{{ errors.password }}</span>
 
-      <label><input id="agree" type="checkbox" v-model="form.agree"> I agree</label>
+      <label><input id="agree" type="checkbox" v-model="form.agree" v-on="handlers.agree"> I agree</label>
       <span class="error-form" v-if="errors.agree && formState.agree.blurred">{{ errors.agree }}</span>
 
       <button class="button-form" :disabled="loading" @click.prevent="submitForm">Create account</button>
