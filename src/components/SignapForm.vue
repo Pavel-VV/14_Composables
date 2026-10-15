@@ -1,5 +1,6 @@
 <script setup>
 import FildForm from './FildForm.vue'
+import FildFormSlot from './FildFormSlot.vue'
 import { ref, watch, watchEffect } from "vue";
 // import { useValidationForm } from '../composables/useValidationForm';
 import { useDraftState } from '../composables/useDraftState';
@@ -80,11 +81,28 @@ async function submitForm() {
         Form
       </div>
       <div>
-        <FildForm
-          v-for="(fildTxt, fild, index) in formInput"
+        <FildFormSlot
+          v-for="(fildValue, fildKey, index) in formInput"
           :key="index"
-          :label="fild"
+        >
+          <template #fild>
+            <div class="form-style">
+              <label>{{ fildKey }} <input class="input-form"/></label>
+              <span class="error-form">{{ errors[fildKey] }}</span>
+            </div>
+          </template>
+        </FildFormSlot>
+      </div>
+---
+      <div>
+        <FildForm
+          v-for="(fildValue, fildKey, index) in formInput"
+          :key="index"
+          :label="fildKey"
+          :error="errors[fildKey]"
+          :fildState="formState[fildKey].blurred"
         />
+        ---
       </div>
       <label>Email <input class="input-form" v-model="form.email" v-on="handlers.email"/></label>
       <span class="error-form" v-if="errors.email && formState.email.blurred">{{ errors.email }}</span>
